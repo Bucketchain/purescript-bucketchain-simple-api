@@ -1,0 +1,35 @@
+{
+  "name": "purescript-bucketchain-simple-api",
+  "license": "MIT",
+  "homepage": "https://github.com/Bucketchain/purescript-bucketchain-simple-api",
+  "authors": [
+    "Shinya Takahashi <s.takahashi313@gmail.com>"
+  ],
+  "description": "A simple API middleware of Bucketchain.",
+  "keywords": [
+    "purescript",
+    "webserver",
+    "api"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Bucketchain/purescript-bucketchain-simple-api.git"
+  },
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-bucketchain": "^0.2.10",
+    "purescript-simple-json": "^4.4.0",
+    "purescript-media-types": "^4.0.1"
+  },
+  "devDependencies": {
+    "purescript-assert": "^4.0.0"
+  }
+}
