@@ -51,6 +51,7 @@ opts =
 server :: Pool -> Effect Server
 server = createServer $ withSimpleAPI pool routes
   where
+    -- SimpleAPI is simple RPC style. it's POST only.
     -- POST /getItems
     -- POST /createItem
     routes = { getItems, createItem }
