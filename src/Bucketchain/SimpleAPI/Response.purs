@@ -20,7 +20,7 @@ type Headers = Object String
 
 type StatusCode = Int
 
--- The type for response used in `Servable` implementation.
+-- | The type for response used in `Servable` implementation.
 newtype Response = Response
   { headers :: Headers
   , status :: StatusCode
