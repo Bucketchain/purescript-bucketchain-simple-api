@@ -5,7 +5,7 @@
   "authors": [
     "Shinya Takahashi <s.takahashi313@gmail.com>"
   ],
-  "description": "A simple API middleware of Bucketchain.",
+  "description": "A simple RPC style API middleware of Bucketchain.",
   "keywords": [
     "purescript",
     "webserver",

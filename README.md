@@ -2,7 +2,7 @@
 
 [![Latest release](http://img.shields.io/github/release/Bucketchain/purescript-bucketchain-simple-api.svg)](https://github.com/Bucketchain/purescript-bucketchain-simple-api/releases)
 
-A simple API middleware of [Bucketchain](https://github.com/Bucketchain/purescript-bucketchain).
+A simple RPC style API middleware of [Bucketchain](https://github.com/Bucketchain/purescript-bucketchain).
 
 ## Installation
 
