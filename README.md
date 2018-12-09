@@ -77,7 +77,7 @@ You can wrap routes with `Batch`:
 
 
 ```purescript
-import Bucketchain.SimpleAPI.Body (Batch(..))
+import Bucketchain.SimpleAPI.Batch (Batch(..))
 
 server :: Pool -> Effect Server
 server = createServer $ withSimpleAPI pool $ Batch routes
