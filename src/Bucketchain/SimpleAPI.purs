@@ -10,9 +10,9 @@ import Bucketchain.SimpleAPI.Response (Response(..))
 import Control.Monad.Reader (ask)
 import Data.Maybe (Maybe(..))
 import Data.String (drop)
+import Data.TraversableWithIndex (traverseWithIndex)
 import Effect.Aff.Class (liftAff)
 import Effect.Class (liftEffect)
-import Foreign.Object (foldM)
 import Simple.JSON (writeJSON)
 
 -- | SimpleAPI middleware.
@@ -38,5 +38,5 @@ withSimpleAPI extraData server next = do
         Nothing -> next
         Just (Response response) -> liftEffect do
           setStatusCode http response.status
-          foldM (const $ setHeader http) unit response.headers
+          void $ traverseWithIndex (setHeader http) response.headers
           Just <$> (body $ writeJSON response.body)
