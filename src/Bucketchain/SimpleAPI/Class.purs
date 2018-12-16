@@ -2,7 +2,7 @@ module Bucketchain.SimpleAPI.Class where
 
 import Prelude
 
-import Bucketchain.SimpleAPI.Action (Action, Context(..), runAction)
+import Bucketchain.SimpleAPI.Action (Action, context, runAction)
 import Bucketchain.SimpleAPI.Auth (Auth(..))
 import Bucketchain.SimpleAPI.Auth.Class (class Authenticatable, authenticate)
 import Bucketchain.SimpleAPI.Batch (BatchParams, Batch(..))
@@ -35,7 +35,7 @@ class ServableList ex (l :: RowList) (r :: # Type) | l -> r where
 
 instance servableAction :: (Respondable a) => Servable ex (Action ex a) where
   serve server extraData rawData = do
-    result <- attempt $ runAction server $ Context { extraData, rawData }
+    result <- attempt $ runAction server $ context extraData rawData
     case result of
       Left _ -> pure $ Just errorResponse
       Right x -> pure $ Just $ toResponse x
@@ -50,7 +50,7 @@ instance servableWithBody :: (ReadForeign a, Servable ex server) => Servable ex 
 
 instance servableWithAuth :: (Authenticatable ex a, Servable ex server) => Servable ex (Auth a -> server) where
   serve server extraData rawData = do
-    result <- attempt $ runAction authenticate $ Context { extraData, rawData }
+    result <- attempt $ runAction authenticate $ context extraData rawData
     case result of
       Left _ -> pure $ Just unauthorizedResponse
       Right x ->

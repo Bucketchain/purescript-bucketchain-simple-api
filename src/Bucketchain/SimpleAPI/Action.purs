@@ -1,9 +1,10 @@
 module Bucketchain.SimpleAPI.Action
-  ( Context(..)
+  ( Context
   , Action
   , askExtra
   , askRaw
   , runAction
+  , context
   ) where
 
 import Prelude
@@ -19,7 +20,7 @@ import Effect.Aff.Class (class MonadAff)
 import Effect.Class (class MonadEffect)
 import Effect.Exception (Error)
 
--- | The type of global context.
+-- | This is for internal. Do not use it.
 newtype Context ex =
   Context
     { extraData :: ex
@@ -56,3 +57,7 @@ askRaw = flip map ask \(Context ctx) -> ctx.rawData
 -- | This is for internal. Do not use it.
 runAction :: forall ex a. Action ex a -> Context ex -> Aff a
 runAction (Action readerT) = runReaderT readerT
+
+-- | This is for internal. Do not use it.
+context :: forall ex. ex -> RawData -> Context ex
+context extraData rawData = Context { extraData, rawData }
