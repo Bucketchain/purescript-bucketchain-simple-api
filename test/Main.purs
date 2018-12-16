@@ -159,7 +159,7 @@ batchTest = do
   res <- requestWithBody opts batchBody
   body <- convertToString $ C.responseAsStream res
   liftEffect do
-    assert $ body == "[{\"status\":503,\"headers\":{\"X-Custom\":\"CustomValue2\",\"content-type\":\"application/json; charset=utf-8\"},\"body\":{\"core\":[\"This is error test\"]}},{\"status\":201,\"headers\":{\"content-type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"Other Item 1\"}},{\"status\":200,\"headers\":{\"content-type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"authuser\"}},{\"status\":404,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":null},{\"status\":500,\"headers\":{\"content-type\":\"application/json; charset=utf-8\"},\"body\":{\"message\":\"Internal server error\"}}]"
+    assert $ body == "[{\"status\":503,\"headers\":{\"X-Custom\":\"CustomValue2\",\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"core\":[\"This is error test\"]}},{\"status\":201,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"Other Item 1\"}},{\"status\":200,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"authuser\"}},{\"status\":404,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":null},{\"status\":500,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"message\":\"Internal server error\"}}]"
     assert $ C.statusCode res == 200
   where
     opts = C.port := 3000

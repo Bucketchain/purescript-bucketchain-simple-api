@@ -6,7 +6,7 @@ import Bucketchain.Http (requestMethod, requestBody, requestURL, setStatusCode, 
 import Bucketchain.Middleware (Middleware)
 import Bucketchain.ResponseBody (body)
 import Bucketchain.SimpleAPI.Class (class Servable, serve)
-import Bucketchain.SimpleAPI.Response (Response(..))
+import Bucketchain.SimpleAPI.Response (responseHeaders, responseStatus, responseBody)
 import Control.Monad.Reader (ask)
 import Data.Maybe (Maybe(..))
 import Data.String (drop)
@@ -36,7 +36,7 @@ withSimpleAPI extraData server next = do
       result <- liftAff $ serve server extraData { http, path, rawBody }
       case result of
         Nothing -> next
-        Just (Response response) -> liftEffect do
-          setStatusCode http response.status
-          void $ traverseWithIndex (setHeader http) response.headers
-          Just <$> (body $ writeJSON response.body)
+        Just r -> liftEffect do
+          setStatusCode http $ responseStatus r
+          void $ traverseWithIndex (setHeader http) $ responseHeaders r
+          Just <$> (body $ writeJSON $ responseBody r)

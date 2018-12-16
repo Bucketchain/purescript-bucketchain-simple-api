@@ -1,7 +1,11 @@
 module Bucketchain.SimpleAPI.Response
-  ( Response(..)
+  ( Response
   , Headers
   , StatusCode
+  , response
+  , responseHeaders
+  , responseStatus
+  , responseBody
   , fromResponses
   , invalidRequestResponse
   , unauthorizedResponse
@@ -29,42 +33,40 @@ newtype Response = Response
 
 derive newtype instance writeForeignResponse :: WriteForeign Response
 
+-- | Constructor function of `Response`.
+response :: Headers -> StatusCode -> Foreign -> Response
+response headers status body = Response { headers, status, body }
+
+-- | This is for internal. Do not use it.
+responseHeaders :: Response -> Headers
+responseHeaders (Response { headers }) = headers
+
+-- | This is for internal. Do not use it.
+responseStatus :: Response -> StatusCode
+responseStatus (Response { status }) = status
+
+-- | This is for internal. Do not use it.
+responseBody :: Response -> Foreign
+responseBody (Response { body }) = body
+
 -- | This is for internal. Do not use it.
 fromResponses :: Array (Maybe Response) -> Response
-fromResponses xs = Response { headers, status, body }
+fromResponses xs = response defaultHeaders 200 body
   where
-    headers = singleton "Content-Type" "application/json; charset=utf-8"
-    status = 200
-    notFound = Response
-      { headers
-      , status: 404
-      , body: write (null :: Nullable Foreign)
-      }
+    notFound = response defaultHeaders 404 $ write (null :: Nullable Foreign)
     body = write $ fromMaybe notFound <$> xs
 
 -- | This is for internal. Do not use it.
 invalidRequestResponse :: Response
-invalidRequestResponse =
-  Response
-    { headers: singleton "content-type" "application/json; charset=utf-8"
-    , status: 400
-    , body: write { message: "Request body is invalid" }
-    }
+invalidRequestResponse = response defaultHeaders 400 $ write { message: "Request body is invalid" }
 
 -- | This is for internal. Do not use it.
 unauthorizedResponse :: Response
-unauthorizedResponse =
-  Response
-    { headers: singleton "content-type" "application/json; charset=utf-8"
-    , status: 401
-    , body: write { message: "Unauthorized" }
-    }
+unauthorizedResponse = response defaultHeaders 401 $ write { message: "Unauthorized" }
 
 -- | This is for internal. Do not use it.
 errorResponse :: Response
-errorResponse =
-  Response
-    { headers: singleton "content-type" "application/json; charset=utf-8"
-    , status: 500
-    , body: write { message: "Internal server error" }
-    }
+errorResponse = response defaultHeaders 500 $ write { message: "Internal server error" }
+
+defaultHeaders :: Headers
+defaultHeaders = singleton "Content-Type" "application/json; charset=utf-8"

@@ -7,7 +7,9 @@ module Bucketchain.SimpleAPI.JSON
   , failure_
   ) where
 
-import Bucketchain.SimpleAPI.Response (Response(..), Headers, StatusCode)
+import Prelude
+
+import Bucketchain.SimpleAPI.Response (Headers, StatusCode, response)
 import Bucketchain.SimpleAPI.Response.Class (class Respondable)
 import Foreign.Object (Object, insert, empty)
 import Simple.JSON (class WriteForeign, write)
@@ -29,17 +31,9 @@ data JSON a
 
 instance respondableJSON :: (WriteForeign a) => Respondable (JSON a) where
   toResponse (Success x) =
-    Response
-      { headers: withJSONContentType x.headers
-      , status: x.status
-      , body: write x.body
-      }
+    response (withJSONContentType x.headers) x.status $ write x.body
   toResponse (Failure x) =
-    Response
-      { headers: withJSONContentType x.headers
-      , status: x.status
-      , body: write x.body
-      }
+    response (withJSONContentType x.headers) x.status $ write x.body
 
 -- | Create a success response.
 success :: forall a. WriteForeign a => Headers -> StatusCode -> a -> JSON a
@@ -58,4 +52,4 @@ failure_ :: forall a. WriteForeign a => StatusCode -> FailureMessages -> JSON a
 failure_ status body = Failure { headers: empty, status, body }
 
 withJSONContentType :: Headers -> Headers
-withJSONContentType = insert "content-type" "application/json; charset=utf-8"
+withJSONContentType = insert "Content-Type" "application/json; charset=utf-8"
