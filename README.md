@@ -6,8 +6,16 @@ A simple RPC style API middleware of [Bucketchain](https://github.com/Bucketchai
 
 ## Installation
 
+### Bower
+
 ```
-bower install purescript-bucketchain-simple-api
+$ bower install purescript-bucketchain-simple-api
+```
+
+### Spago
+
+```
+$ spago install bucketchain-simple-api
 ```
 
 ## Getting Started
