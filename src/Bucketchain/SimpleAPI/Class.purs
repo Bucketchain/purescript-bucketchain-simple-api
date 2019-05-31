@@ -20,7 +20,7 @@ import Foreign (MultipleErrors)
 import Prim.Row (class Cons)
 import Record.Unsafe (unsafeGet)
 import Simple.JSON (class ReadForeign, writeJSON)
-import Type.Row (class RowToList, kind RowList, Cons, Nil, RLProxy(..))
+import Type.RowList (class RowToList, kind RowList, Cons, Nil, RLProxy(..))
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | A typeclass what type is servable.
