@@ -32,6 +32,7 @@ main = do
     authSuccessTest
     authFailureTest
     errorTest
+    freeTTest
     batchTest
   where
     opts =
@@ -153,6 +154,21 @@ errorTest = do
     opts = C.port := 3000
         <> C.method := "POST"
         <> C.path := "/errorTest"
+
+freeTTest :: Aff Unit
+freeTTest = do
+  res <- requestWithBody opts "{\"name\":\"test\"}"
+  body <- convertToString $ C.responseAsStream res
+  liftEffect do
+    assert $ body == "{\"name\":\"777{\\\"name\\\":\\\"test\\\"}\"}"
+    assert $ C.statusCode res == 200
+  where
+    opts = C.port := 3000
+        <> C.method := "POST"
+        <> C.path := "/freeTTest"
+        <> C.headers := headers
+    headers =
+      C.RequestHeaders $ singleton "Content-Type" "application/json"
 
 batchTest :: Aff Unit
 batchTest = do
