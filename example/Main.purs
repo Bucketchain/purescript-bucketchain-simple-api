@@ -11,8 +11,11 @@ import Bucketchain.SimpleAPI.Auth (Auth(..))
 import Bucketchain.SimpleAPI.Auth.Class (class Authenticatable)
 import Bucketchain.SimpleAPI.Batch (Batch(..))
 import Bucketchain.SimpleAPI.Body (Body(..))
-import Bucketchain.SimpleAPI.JSON (JSON, success, failure)
+import Bucketchain.SimpleAPI.FreeT.Class (class Transformable)
+import Bucketchain.SimpleAPI.JSON (JSON, failure, success, success_)
+import Bucketchain.SimpleAPI.RawData (RawData)
 import Control.Monad.Error.Class (throwError)
+import Control.Monad.Free.Trans (FreeT, liftFreeT)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Exception (error)
@@ -54,7 +57,14 @@ opts =
   }
 
 middleware :: Middleware
-middleware = withSimpleAPI 777 $ Batch { successTest, failureTest, bodyTest, authTest, errorTest }
+middleware = withSimpleAPI 777 $ Batch
+  { successTest
+  , failureTest
+  , bodyTest
+  , authTest
+  , errorTest
+  , freeTTest
+  }
 
 successTest :: Action Int (JSON (Array Item))
 successTest = do
@@ -77,3 +87,28 @@ authTest (Auth (User x)) = pure $ success empty 200 { name: x.name }
 
 errorTest :: Action Int (JSON OtherItem)
 errorTest = throwError $ error "Test error"
+
+freeTTest :: VAction (JSON OtherItem)
+freeTTest = do
+  num <- getExtra
+  rawData <- getRawData
+  pure $ success_ 200 { name: show num <> rawData.rawBody }
+
+-- FreeT Example
+data VActionF a
+  = GetExtra (Int -> a)
+  | GetRawData (RawData -> a)
+
+type VAction = FreeT VActionF (Action Int)
+
+derive instance functorVAction :: Functor VActionF
+
+getExtra :: VAction Int
+getExtra = liftFreeT $ GetExtra identity
+
+getRawData :: VAction RawData
+getRawData = liftFreeT $ GetRawData identity
+
+instance transformableVActionF :: Transformable Int VActionF where
+  transform (GetExtra k) = k <$> askExtra
+  transform (GetRawData k) = k <$> askRaw
