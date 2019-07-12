@@ -7,9 +7,11 @@ import Bucketchain.SimpleAPI.Auth (Auth(..))
 import Bucketchain.SimpleAPI.Auth.Class (class Authenticatable, authenticate)
 import Bucketchain.SimpleAPI.Batch (BatchParams, Batch(..))
 import Bucketchain.SimpleAPI.Body (Body(..), decodeBody)
+import Bucketchain.SimpleAPI.FreeT.Class (class Transformable, transform)
 import Bucketchain.SimpleAPI.RawData (RawData)
 import Bucketchain.SimpleAPI.Response (Response, fromResponses, invalidRequestResponse, unauthorizedResponse, errorResponse)
 import Bucketchain.SimpleAPI.Response.Class (class Respondable, toResponse)
+import Control.Monad.Free.Trans (FreeT, runFreeT)
 import Control.Parallel (parTraverse)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
@@ -39,6 +41,9 @@ instance servableAction :: (Respondable a) => Servable ex (Action ex a) where
     case result of
       Left _ -> pure $ Just errorResponse
       Right x -> pure $ Just $ toResponse x
+
+instance servableFreeT :: (Transformable ex f, Respondable a) => Servable ex (FreeT f (Action ex) a) where
+  serve server extraData rawData = serve (runFreeT transform server) extraData rawData
 
 instance servableWithBody :: (ReadForeign a, Servable ex server) => Servable ex (Body a -> server) where
   serve server extraData rawData =
