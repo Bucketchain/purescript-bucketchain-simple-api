@@ -4,6 +4,8 @@
 
 A simple RPC style API middleware of [Bucketchain](https://github.com/Bucketchain/purescript-bucketchain).
 
+See [example](https://github.com/Bucketchain/purescript-bucketchain-simple-api/blob/master/example/Main.purs).
+
 ## Installation
 
 ### Bower
