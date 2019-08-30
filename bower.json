@@ -28,7 +28,7 @@
     "purescript-bucketchain": "^0.3.0",
     "purescript-simple-json": "^7.0.0",
     "purescript-media-types": "^4.0.1",
-    "purescript-freet": "^4.0.0"
+    "purescript-freet": "^5.0.0"
   },
   "devDependencies": {
     "purescript-assert": "^4.1.0"
