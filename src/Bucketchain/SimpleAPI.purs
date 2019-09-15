@@ -17,7 +17,7 @@ import Simple.JSON (writeJSON)
 
 -- | SimpleAPI middleware.
 -- |
--- | `ex` is any extra data. It is typically global context such as db connection and can be used in `Action`.
+-- | `ex` is any extra data. It is typically global context such as db connection and can be used in `Proc`.
 -- |
 -- | `server` is a `Servable` instance.
 withSimpleAPI

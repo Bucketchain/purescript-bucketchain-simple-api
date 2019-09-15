@@ -10,7 +10,7 @@ type BatchParams = Array
 
 -- | The type for enable batch operation.
 -- |
--- | The batch operation is a mechanism running multiple `Action` in one HTTP request.
+-- | The batch operation is a mechanism running multiple `Proc` in one HTTP request.
 -- |
 -- | How to use:
 -- |

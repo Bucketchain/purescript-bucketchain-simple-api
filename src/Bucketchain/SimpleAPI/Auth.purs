@@ -6,6 +6,6 @@ module Bucketchain.SimpleAPI.Auth where
 -- |
 -- | ```purescript
 -- | -- This request handler is run with authentication.
--- | getItems :: Auth User -> Action AppContext (JSON Item)
+-- | getItems :: Auth User -> Proc AppContext (JSON Item)
 -- | ```
 newtype Auth a = Auth a

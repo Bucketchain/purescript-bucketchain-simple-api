@@ -29,9 +29,9 @@ import App.DB (Pool, createConnectionPool, withPool, selectItems, createItem)
 import Bucketchain (createServer, listen)
 import Bucketchain.Middleware (Middleware)
 import Bucketchain.SimpleAPI (withSimpleAPI)
-import Bucketchain.SimpleAPI.Action (Action, askExtra)
 import Bucketchain.SimpleAPI.Body (Body(..))
 import Bucketchain.SimpleAPI.JSON (JSON, success_)
+import Bucketchain.SimpleAPI.Proc (Proc, askExtra)
 import Effect (Effect)
 import Node.HTTP (ListenOptions, Server)
 
@@ -68,13 +68,13 @@ server = createServer $ withSimpleAPI pool routes
 
 -- Define endpoints.
 
-getItems :: Action Pool (JSON (Array Item))
+getItems :: Proc Pool (JSON (Array Item))
 getItems = do
   pool <- askExtra
   items <- liftAff $ withPool selectItems pool
   pure $ success_ 200 items
 
-createItem :: Body ItemParams -> Action Pool (JSON Item)
+createItem :: Body ItemParams -> Proc Pool (JSON Item)
 createItem (Body params) = do
   pool <- askExtra
   item <- liftAff $ withPool (createItem params) pool
@@ -131,8 +131,8 @@ Note: `POST /batch` responds 200 always.
 You can use `Authenticatable` for authentication.
 
 ```purescript
-import Bucketchain.SimpleAPI.Action (askExtra, askRaw)
 import Bucketchain.SimpleAPI.Auth.Class (class Authenticatable)
+import Bucketchain.SimpleAPI.Proc (askExtra, askRaw)
 
 newtype User = User { id :: Int, name :: String }
 
@@ -149,7 +149,7 @@ instance authenticatableUser :: Authenticatable Pool User where
 Then, define request handlers with `Auth`.
 
 ```purescript
-getItems :: Auth User -> Action Pool (JSON (Array Item))
+getItems :: Auth User -> Proc Pool (JSON (Array Item))
 getItems (Auth user) = -- ...
 ```
 

@@ -6,13 +6,13 @@ import Bucketchain (createServer, listen)
 import Bucketchain.Http (requestHeaders)
 import Bucketchain.Middleware (Middleware)
 import Bucketchain.SimpleAPI (withSimpleAPI)
-import Bucketchain.SimpleAPI.Action (Action, askExtra, askRaw)
 import Bucketchain.SimpleAPI.Auth (Auth(..))
 import Bucketchain.SimpleAPI.Auth.Class (class Authenticatable)
 import Bucketchain.SimpleAPI.Batch (Batch(..))
 import Bucketchain.SimpleAPI.Body (Body(..))
 import Bucketchain.SimpleAPI.FreeT.Class (class Transformable)
 import Bucketchain.SimpleAPI.JSON (JSON, failure, success, success_)
+import Bucketchain.SimpleAPI.Proc (Proc, askExtra, askRaw)
 import Bucketchain.SimpleAPI.RawData (RawData)
 import Control.Monad.Error.Class (throwError)
 import Control.Monad.Free.Trans (FreeT, liftFreeT)
@@ -66,7 +66,7 @@ middleware = withSimpleAPI 777 $ Batch
   , freeTTest
   }
 
-successTest :: Action Int (JSON (Array Item))
+successTest :: Proc Int (JSON (Array Item))
 successTest = do
   num <- askExtra
   { path, rawBody } <- askRaw
@@ -74,41 +74,41 @@ successTest = do
   where
     headers = singleton "X-Custom" "CustomValue"
 
-failureTest :: Action Int (JSON Item)
+failureTest :: Proc Int (JSON Item)
 failureTest = pure $ failure headers 503 $ singleton "core" ["This is error test"]
   where
     headers = singleton "X-Custom" "CustomValue2"
 
-bodyTest :: Body OtherItem -> Action Int (JSON OtherItem)
+bodyTest :: Body OtherItem -> Proc Int (JSON OtherItem)
 bodyTest (Body x) = pure $ success empty 201 x
 
-authTest :: Auth User -> Action Int (JSON OtherItem)
+authTest :: Auth User -> Proc Int (JSON OtherItem)
 authTest (Auth (User x)) = pure $ success empty 200 { name: x.name }
 
-errorTest :: Action Int (JSON OtherItem)
+errorTest :: Proc Int (JSON OtherItem)
 errorTest = throwError $ error "Test error"
 
-freeTTest :: VAction (JSON OtherItem)
+freeTTest :: VProc (JSON OtherItem)
 freeTTest = do
   num <- getExtra
   rawData <- getRawData
   pure $ success_ 200 { name: show num <> rawData.rawBody }
 
 -- FreeT Example
-data VActionF a
+data VProcF a
   = GetExtra (Int -> a)
   | GetRawData (RawData -> a)
 
-type VAction = FreeT VActionF (Action Int)
+type VProc = FreeT VProcF (Proc Int)
 
-derive instance functorVAction :: Functor VActionF
+derive instance functorVProc :: Functor VProcF
 
-getExtra :: VAction Int
+getExtra :: VProc Int
 getExtra = liftFreeT $ GetExtra identity
 
-getRawData :: VAction RawData
+getRawData :: VProc RawData
 getRawData = liftFreeT $ GetRawData identity
 
-instance transformableVActionF :: Transformable Int VActionF where
+instance transformableVProcF :: Transformable Int VProcF where
   transform (GetExtra k) = k <$> askExtra
   transform (GetRawData k) = k <$> askRaw

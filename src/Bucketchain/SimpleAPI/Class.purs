@@ -2,12 +2,12 @@ module Bucketchain.SimpleAPI.Class where
 
 import Prelude
 
-import Bucketchain.SimpleAPI.Action (Action, context, runAction)
 import Bucketchain.SimpleAPI.Auth (Auth(..))
 import Bucketchain.SimpleAPI.Auth.Class (class Authenticatable, authenticate)
 import Bucketchain.SimpleAPI.Batch (BatchParams, Batch(..))
 import Bucketchain.SimpleAPI.Body (Body(..), decodeBody)
 import Bucketchain.SimpleAPI.FreeT.Class (class Transformable, transform)
+import Bucketchain.SimpleAPI.Proc (Proc, context, runProc)
 import Bucketchain.SimpleAPI.RawData (RawData)
 import Bucketchain.SimpleAPI.Response (Response, fromResponses, invalidRequestResponse, unauthorizedResponse, errorResponse)
 import Bucketchain.SimpleAPI.Response.Class (class Respondable, toResponse)
@@ -35,14 +35,14 @@ class Servable ex server where
 class ServableList ex (l :: RowList) (r :: # Type) | l -> r where
   serveList :: RLProxy l -> Record r -> ex -> RawData -> Aff (Maybe Response)
 
-instance servableAction :: (Respondable a) => Servable ex (Action ex a) where
+instance servableProc :: (Respondable a) => Servable ex (Proc ex a) where
   serve server extraData rawData = do
-    result <- attempt $ runAction server $ context extraData rawData
+    result <- attempt $ runProc server $ context extraData rawData
     case result of
       Left _ -> pure $ Just errorResponse
       Right x -> pure $ Just $ toResponse x
 
-instance servableFreeT :: (Transformable ex f, Respondable a) => Servable ex (FreeT f (Action ex) a) where
+instance servableFreeT :: (Transformable ex f, Respondable a) => Servable ex (FreeT f (Proc ex) a) where
   serve server extraData rawData = serve (runFreeT transform server) extraData rawData
 
 instance servableWithBody :: (ReadForeign a, Servable ex server) => Servable ex (Body a -> server) where
@@ -55,7 +55,7 @@ instance servableWithBody :: (ReadForeign a, Servable ex server) => Servable ex 
 
 instance servableWithAuth :: (Authenticatable ex a, Servable ex server) => Servable ex (Auth a -> server) where
   serve server extraData rawData = do
-    result <- attempt $ runAction authenticate $ context extraData rawData
+    result <- attempt $ runProc authenticate $ context extraData rawData
     case result of
       Left _ -> pure $ Just unauthorizedResponse
       Right x ->
