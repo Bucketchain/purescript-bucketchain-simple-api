@@ -140,10 +140,10 @@ instance authenticatableUser :: Authenticatable Pool User where
   authenticate = do
     { http } <- askRaw
     case lookup "authorization" $ requestHeaders http of
-      Nothing -> throwError $ error "unauthorized"
+      Nothing -> pure Nothing
       Just x -> do
         pool <- askExtra
-        liftAff $ withPool (selectUserFromToken x) pool
+        liftAff $ Just <$> withPool (selectUserFromToken x) pool
 ```
 
 Then, define request handlers with `Auth`.
