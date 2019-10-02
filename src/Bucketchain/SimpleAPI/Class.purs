@@ -9,7 +9,7 @@ import Bucketchain.SimpleAPI.Body (Body(..), decodeBody)
 import Bucketchain.SimpleAPI.FreeT.Class (class Transformable, transform)
 import Bucketchain.SimpleAPI.Proc (Proc, context, runProc)
 import Bucketchain.SimpleAPI.RawData (RawData)
-import Bucketchain.SimpleAPI.Response (Response, fromResponses, invalidRequestResponse, unauthorizedResponse, errorResponse)
+import Bucketchain.SimpleAPI.Response (Response, fromResponses, invalidRequestResponse, unauthorizedResponse)
 import Bucketchain.SimpleAPI.Response.Class (class Respondable, toResponse)
 import Control.Monad.Free.Trans (FreeT, runFreeT)
 import Control.Parallel (parTraverse)
@@ -17,7 +17,7 @@ import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.String (drop)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
-import Effect.Aff (Aff, attempt)
+import Effect.Aff (Aff)
 import Foreign (MultipleErrors)
 import Prim.Row (class Cons)
 import Record.Unsafe (unsafeGet)
@@ -36,11 +36,8 @@ class ServableList ex (l :: RowList) (r :: # Type) | l -> r where
   serveList :: RLProxy l -> Record r -> ex -> RawData -> Aff (Maybe Response)
 
 instance servableProc :: (Respondable a) => Servable ex (Proc ex a) where
-  serve server extraData rawData = do
-    result <- attempt $ runProc server $ context extraData rawData
-    case result of
-      Left _ -> pure $ Just errorResponse
-      Right x -> pure $ Just $ toResponse x
+  serve server extraData rawData =
+    (runProc server $ context extraData rawData) <#> toResponse >>> Just
 
 instance servableFreeT :: (Transformable ex f, Respondable a) => Servable ex (FreeT f (Proc ex) a) where
   serve server extraData rawData = serve (runFreeT transform server) extraData rawData

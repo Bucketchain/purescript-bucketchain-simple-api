@@ -9,7 +9,6 @@ module Bucketchain.SimpleAPI.Response
   , fromResponses
   , invalidRequestResponse
   , unauthorizedResponse
-  , errorResponse
   ) where
 
 import Prelude
@@ -63,10 +62,6 @@ invalidRequestResponse = response defaultHeaders 400 $ write { message: "Request
 -- | This is for internal. Do not use it.
 unauthorizedResponse :: Response
 unauthorizedResponse = response defaultHeaders 401 $ write { message: "Unauthorized" }
-
--- | This is for internal. Do not use it.
-errorResponse :: Response
-errorResponse = response defaultHeaders 500 $ write { message: "Internal server error" }
 
 defaultHeaders :: Headers
 defaultHeaders = singleton "Content-Type" "application/json; charset=utf-8"

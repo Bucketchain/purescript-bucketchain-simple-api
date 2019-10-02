@@ -34,6 +34,7 @@ main = do
     errorTest
     freeTTest
     batchTest
+    batchErrorTest
   where
     opts =
       { hostname: "localhost"
@@ -175,7 +176,7 @@ batchTest = do
   res <- requestWithBody opts batchBody
   body <- convertToString $ C.responseAsStream res
   liftEffect do
-    assert $ body == "[{\"status\":503,\"headers\":{\"X-Custom\":\"CustomValue2\",\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"core\":[\"This is error test\"]}},{\"status\":201,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"Other Item 1\"}},{\"status\":200,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"authuser\"}},{\"status\":404,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":null},{\"status\":500,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"message\":\"Internal server error\"}}]"
+    assert $ body == "[{\"status\":503,\"headers\":{\"X-Custom\":\"CustomValue2\",\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"core\":[\"This is error test\"]}},{\"status\":201,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"Other Item 1\"}},{\"status\":200,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"authuser\"}},{\"status\":404,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":null}]"
     assert $ C.statusCode res == 200
   where
     opts = C.port := 3000
@@ -188,5 +189,22 @@ batchTest = do
         , Tuple "X-Test-Auth" "authuser"
         ]
 
+batchErrorTest :: Aff Unit
+batchErrorTest = do
+  res <- requestWithBody opts batchErrorBody
+  liftEffect $ assert $ C.statusCode res == 500
+  where
+    opts = C.port := 3000
+        <> C.method := "POST"
+        <> C.path := "/batch"
+        <> C.headers := headers
+    headers =
+      C.RequestHeaders $ fromFoldable
+        [ Tuple "Content-Type" "application/json"
+        ]
+
 batchBody :: String
-batchBody = "[{\"path\":\"/failureTest\"},{\"path\":\"/bodyTest\",\"body\":{\"name\":\"Other Item 1\"}},{\"path\":\"/authTest\"},{\"path\":\"/notFound\"},{\"path\":\"/errorTest\"}]"
+batchBody = "[{\"path\":\"/failureTest\"},{\"path\":\"/bodyTest\",\"body\":{\"name\":\"Other Item 1\"}},{\"path\":\"/authTest\"},{\"path\":\"/notFound\"}]"
+
+batchErrorBody :: String
+batchErrorBody = "[{\"path\":\"/bodyTest\",\"body\":{\"name\":\"Other Item 1\"}},{\"path\":\"/errorTest\"}]"
