@@ -1,6 +1,7 @@
 module Bucketchain.SimpleAPI.Auth.Class where
 
 import Bucketchain.SimpleAPI.Proc (Proc)
+import Data.Maybe (Maybe)
 
 -- | A typeclass for authentication.
 -- |
@@ -8,6 +9,6 @@ import Bucketchain.SimpleAPI.Proc (Proc)
 -- |
 -- | `a` is a authenticated result. It is typically user data.
 -- |
--- | If you call `throwError` in `authenticate` implementation, a server responds 401.
+-- | If you return `Nothing` in `authenticate` implementation, a server responds 401.
 class Authenticatable ex a where
-  authenticate :: Proc ex a
+  authenticate :: Proc ex (Maybe a)

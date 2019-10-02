@@ -55,10 +55,10 @@ instance servableWithBody :: (ReadForeign a, Servable ex server) => Servable ex 
 
 instance servableWithAuth :: (Authenticatable ex a, Servable ex server) => Servable ex (Auth a -> server) where
   serve server extraData rawData = do
-    result <- attempt $ runProc authenticate $ context extraData rawData
+    result <- runProc authenticate $ context extraData rawData
     case result of
-      Left _ -> pure $ Just unauthorizedResponse
-      Right x ->
+      Nothing -> pure $ Just unauthorizedResponse
+      Just x ->
         serve (server $ Auth x) extraData rawData
 
 instance servableBatch :: Servable ex server => Servable ex (Batch server) where

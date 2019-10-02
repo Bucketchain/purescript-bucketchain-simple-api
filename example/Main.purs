@@ -39,9 +39,7 @@ newtype User = User { name :: String }
 instance authenticatableUser :: Authenticatable Int User where
   authenticate = do
     { http } <- askRaw
-    case lookup "x-test-auth" $ requestHeaders http of
-      Nothing -> throwError $ error "Test error"
-      Just x -> pure $ User { name: x }
+    pure $ User <$> { name: _ } <$> (lookup "x-test-auth" $ requestHeaders http)
 
 main :: Effect Unit
 main = server >>= listen opts
