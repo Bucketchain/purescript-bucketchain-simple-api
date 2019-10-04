@@ -68,12 +68,12 @@ successTest :: Proc Int (JSON (Array Item))
 successTest = do
   num <- askExtra
   { path, rawBody } <- askRaw
-  pure $ success headers 200 [{ id: 1, name: "Item 1", num, path, rawBody }]
+  pure $ success headers 200 [ { id: 1, name: "Item 1", num, path, rawBody } ]
   where
     headers = singleton "X-Custom" "CustomValue"
 
 failureTest :: Proc Int (JSON Item)
-failureTest = pure $ failure headers 503 $ singleton "core" ["This is error test"]
+failureTest = pure $ failure headers 503 [ "This is error test" ]
   where
     headers = singleton "X-Custom" "CustomValue2"
 

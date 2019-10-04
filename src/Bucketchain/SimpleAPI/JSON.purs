@@ -11,10 +11,10 @@ import Prelude
 
 import Bucketchain.SimpleAPI.Response (Headers, StatusCode, response)
 import Bucketchain.SimpleAPI.Response.Class (class Respondable)
-import Foreign.Object (Object, insert, empty)
+import Foreign.Object (insert, empty)
 import Simple.JSON (class WriteForeign, write)
 
-type FailureMessages = Object (Array String)
+type FailureMessages = Array String
 
 -- | The type for JSON response.
 data JSON a

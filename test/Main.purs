@@ -88,7 +88,7 @@ failureTest = do
   res <- request opts
   body <- convertToString $ C.responseAsStream res
   liftEffect do
-    assert $ body == "{\"core\":[\"This is error test\"]}"
+    assert $ body == "[\"This is error test\"]"
     assert $ C.statusCode res == 503
     assert $ Just "CustomValue2" == (lookup "x-custom" $ C.responseHeaders res)
   where
@@ -176,7 +176,7 @@ batchTest = do
   res <- requestWithBody opts batchBody
   body <- convertToString $ C.responseAsStream res
   liftEffect do
-    assert $ body == "[{\"status\":503,\"headers\":{\"X-Custom\":\"CustomValue2\",\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"core\":[\"This is error test\"]}},{\"status\":201,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"Other Item 1\"}},{\"status\":200,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"authuser\"}},{\"status\":404,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":null}]"
+    assert $ body == "[{\"status\":503,\"headers\":{\"X-Custom\":\"CustomValue2\",\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":[\"This is error test\"]},{\"status\":201,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"Other Item 1\"}},{\"status\":200,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"authuser\"}},{\"status\":404,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":null}]"
     assert $ C.statusCode res == 200
   where
     opts = C.port := 3000
