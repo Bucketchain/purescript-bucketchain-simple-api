@@ -6,11 +6,10 @@ import Bucketchain.Http (requestMethod, requestBody, requestURL, setStatusCode, 
 import Bucketchain.Middleware (Middleware)
 import Bucketchain.ResponseBody (body)
 import Bucketchain.SimpleAPI.Class (class Servable, serve)
-import Bucketchain.SimpleAPI.Response (responseHeaders, responseStatus, responseBody)
+import Bucketchain.SimpleAPI.Response (responseStatus, responseBody)
 import Control.Monad.Reader (ask)
 import Data.Maybe (Maybe(..))
 import Data.String (drop)
-import Data.TraversableWithIndex (traverseWithIndex)
 import Effect.Aff.Class (liftAff)
 import Effect.Class (liftEffect)
 import Simple.JSON (writeJSON)
@@ -38,5 +37,5 @@ withSimpleAPI extraData server next = do
         Nothing -> next
         Just r -> liftEffect do
           setStatusCode http $ responseStatus r
-          void $ traverseWithIndex (setHeader http) $ responseHeaders r
+          setHeader http "Content-Type" "application/json; charset=utf-8"
           Just <$> (body $ writeJSON $ responseBody r)

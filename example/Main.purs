@@ -3,7 +3,7 @@ module Main where
 import Prelude
 
 import Bucketchain (createServer, listen)
-import Bucketchain.Http (requestHeaders)
+import Bucketchain.Http (requestHeaders, setHeader)
 import Bucketchain.Middleware (Middleware)
 import Bucketchain.SimpleAPI (withSimpleAPI)
 import Bucketchain.SimpleAPI.Auth (Auth(..))
@@ -11,15 +11,16 @@ import Bucketchain.SimpleAPI.Auth.Class (class Authenticatable)
 import Bucketchain.SimpleAPI.Batch (Batch(..))
 import Bucketchain.SimpleAPI.Body (Body(..))
 import Bucketchain.SimpleAPI.FreeT.Class (class Transformable)
-import Bucketchain.SimpleAPI.JSON (JSON, failure, success, success_)
+import Bucketchain.SimpleAPI.JSON (JSON, failure, success)
 import Bucketchain.SimpleAPI.Proc (Proc, askExtra, askRaw)
 import Bucketchain.SimpleAPI.RawData (RawData)
 import Control.Monad.Error.Class (throwError)
 import Control.Monad.Free.Trans (FreeT, liftFreeT)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
+import Effect.Class (liftEffect)
 import Effect.Exception (error)
-import Foreign.Object (lookup, empty, singleton)
+import Foreign.Object (lookup)
 import Node.HTTP (ListenOptions, Server)
 
 type Item =
@@ -67,21 +68,21 @@ middleware = withSimpleAPI 777 $ Batch
 successTest :: Proc Int (JSON (Array Item))
 successTest = do
   num <- askExtra
-  { path, rawBody } <- askRaw
-  pure $ success headers 200 [ { id: 1, name: "Item 1", num, path, rawBody } ]
-  where
-    headers = singleton "X-Custom" "CustomValue"
+  { http, path, rawBody } <- askRaw
+  liftEffect $ setHeader http "X-Custom" "CustomValue"
+  pure $ success 200 [ { id: 1, name: "Item 1", num, path, rawBody } ]
 
 failureTest :: Proc Int (JSON Item)
-failureTest = pure $ failure headers 503 [ "This is error test" ]
-  where
-    headers = singleton "X-Custom" "CustomValue2"
+failureTest = do
+  { http } <- askRaw
+  liftEffect $ setHeader http "X-Custom" "CustomValue2"
+  pure $ failure 503 [ "This is error test" ]
 
 bodyTest :: Body OtherItem -> Proc Int (JSON OtherItem)
-bodyTest (Body x) = pure $ success empty 201 x
+bodyTest (Body x) = pure $ success 201 x
 
 authTest :: Auth User -> Proc Int (JSON OtherItem)
-authTest (Auth (User x)) = pure $ success empty 200 { name: x.name }
+authTest (Auth (User x)) = pure $ success 200 { name: x.name }
 
 errorTest :: Proc Int (JSON OtherItem)
 errorTest = throwError $ error "Test error"
@@ -90,7 +91,7 @@ freeTTest :: VProc (JSON OtherItem)
 freeTTest = do
   num <- getExtra
   rawData <- getRawData
-  pure $ success_ 200 { name: show num <> rawData.rawBody }
+  pure $ success 200 { name: show num <> rawData.rawBody }
 
 -- FreeT Example
 data VProcF a

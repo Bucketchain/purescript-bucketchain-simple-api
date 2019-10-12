@@ -176,7 +176,7 @@ batchTest = do
   res <- requestWithBody opts batchBody
   body <- convertToString $ C.responseAsStream res
   liftEffect do
-    assert $ body == "[{\"status\":503,\"headers\":{\"X-Custom\":\"CustomValue2\",\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":[\"This is error test\"]},{\"status\":201,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"Other Item 1\"}},{\"status\":200,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":{\"name\":\"authuser\"}},{\"status\":404,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\"},\"body\":null}]"
+    assert $ body == "[{\"status\":503,\"body\":[\"This is error test\"]},{\"status\":201,\"body\":{\"name\":\"Other Item 1\"}},{\"status\":200,\"body\":{\"name\":\"authuser\"}},{\"status\":404,\"body\":null}]"
     assert $ C.statusCode res == 200
   where
     opts = C.port := 3000
