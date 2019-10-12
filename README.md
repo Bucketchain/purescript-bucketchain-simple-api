@@ -30,7 +30,7 @@ import Bucketchain (createServer, listen)
 import Bucketchain.Middleware (Middleware)
 import Bucketchain.SimpleAPI (withSimpleAPI)
 import Bucketchain.SimpleAPI.Body (Body(..))
-import Bucketchain.SimpleAPI.JSON (JSON, success_)
+import Bucketchain.SimpleAPI.JSON (JSON, success)
 import Bucketchain.SimpleAPI.Proc (Proc, askExtra)
 import Effect (Effect)
 import Node.HTTP (ListenOptions, Server)
@@ -72,13 +72,13 @@ getItems :: Proc Pool (JSON (Array Item))
 getItems = do
   pool <- askExtra
   items <- liftAff $ withPool selectItems pool
-  pure $ success_ 200 items
+  pure $ success 200 items
 
 createItem :: Body ItemParams -> Proc Pool (JSON Item)
 createItem (Body params) = do
   pool <- askExtra
   item <- liftAff $ withPool (createItem params) pool
-  pure $ success_ 201 item
+  pure $ success 201 item
 ```
 
 ## Enable the batch operation
@@ -113,12 +113,10 @@ You will get results like:
 [
   {
     "status": 200,
-    "headers": { "content-type": "application/json; charset=utf-8" },
     "body": [ { "id": 1, "name": "Item 1" }, { "id": 2, "name": "Item 2" } ]
   },
   {
     "status": 201,
-    "headers": { "content-type": "application/json; charset=utf-8" },
     "body": { "id": 3, "name": "Item 3" }
   }
 ]
