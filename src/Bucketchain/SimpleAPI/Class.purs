@@ -22,7 +22,7 @@ import Foreign (MultipleErrors)
 import Prim.Row (class Cons)
 import Record.Unsafe (unsafeGet)
 import Simple.JSON (class ReadForeign, writeJSON)
-import Type.RowList (class RowToList, kind RowList, Cons, Nil, RLProxy(..))
+import Type.RowList (class RowToList, RowList, Cons, Nil, RLProxy(..))
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | A typeclass what type is servable.
@@ -32,7 +32,7 @@ class Servable ex server where
   serve :: server -> ex -> RawData -> Aff (Maybe Response)
 
 -- | This is for internal. Do not use it.
-class ServableList ex (l :: RowList) (r :: # Type) | l -> r where
+class ServableList ex (l :: RowList Type) (r :: Row Type) | l -> r where
   serveList :: RLProxy l -> Record r -> ex -> RawData -> Aff (Maybe Response)
 
 instance servableProc :: (Respondable a) => Servable ex (Proc ex a) where
