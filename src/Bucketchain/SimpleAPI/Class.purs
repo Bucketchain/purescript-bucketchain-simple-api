@@ -16,13 +16,14 @@ import Control.Parallel (parTraverse)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.String (drop)
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Effect.Aff (Aff)
 import Foreign (MultipleErrors)
 import Prim.Row (class Cons)
 import Record.Unsafe (unsafeGet)
 import Simple.JSON (class ReadForeign, writeJSON)
-import Type.RowList (class RowToList, kind RowList, Cons, Nil, RLProxy(..))
+import Type.Proxy (Proxy(..))
+import Type.RowList (class RowToList, RowList, Cons, Nil)
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | A typeclass what type is servable.
@@ -32,8 +33,8 @@ class Servable ex server where
   serve :: server -> ex -> RawData -> Aff (Maybe Response)
 
 -- | This is for internal. Do not use it.
-class ServableList ex (l :: RowList) (r :: # Type) | l -> r where
-  serveList :: RLProxy l -> Record r -> ex -> RawData -> Aff (Maybe Response)
+class ServableList ex (l :: RowList Type) (r :: Row Type) | l -> r where
+  serveList :: Proxy l -> Record r -> ex -> RawData -> Aff (Maybe Response)
 
 instance servableProc :: (Respondable a) => Servable ex (Proc ex a) where
   serve server extraData rawData =
@@ -82,7 +83,7 @@ instance servableBatch :: Servable ex server => Servable ex (Batch server) where
             }
 
 instance servableRecord :: (RowToList r l, ServableList ex l r) => Servable ex (Record r) where
-  serve = serveList (RLProxy :: RLProxy l)
+  serve = serveList (Proxy :: Proxy l)
 
 instance servableListNil :: ServableList ex Nil () where
   serveList _ _ _ _ = pure Nothing
@@ -91,5 +92,5 @@ instance servableListCons
   :: (IsSymbol route, Servable ex server, ServableList ex taill tailr, Cons route server tailr r)
   => ServableList ex (Cons route server taill) r where
   serveList _ rec extraData rawData
-    | rawData.path == reflectSymbol (SProxy :: SProxy route) = serve (unsafeGet rawData.path rec :: server) extraData rawData
-    | otherwise = serveList (RLProxy :: RLProxy taill) (unsafeCoerce rec) extraData rawData
+    | rawData.path == reflectSymbol (Proxy :: Proxy route) = serve (unsafeGet rawData.path rec :: server) extraData rawData
+    | otherwise = serveList (Proxy :: Proxy taill) (unsafeCoerce rec) extraData rawData
