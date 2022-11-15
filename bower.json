@@ -25,12 +25,12 @@
     "output"
   ],
   "dependencies": {
-    "purescript-bucketchain": "^0.4.0",
-    "purescript-simple-json": "^8.0.0",
-    "purescript-media-types": "^5.0.0",
-    "purescript-freet": "^6.0.0"
+    "purescript-bucketchain": "^1.0.0",
+    "purescript-simple-json": "^9.0.0",
+    "purescript-media-types": "^6.0.0",
+    "purescript-freet": "^7.0.0"
   },
   "devDependencies": {
-    "purescript-assert": "^5.0.0"
+    "purescript-assert": "^6.0.0"
   }
 }
