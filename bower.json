@@ -1,36 +1,40 @@
 {
-  "name": "purescript-bucketchain-simple-api",
-  "license": "MIT",
-  "homepage": "https://github.com/Bucketchain/purescript-bucketchain-simple-api",
-  "authors": [
-    "Shinya Takahashi <s.takahashi313@gmail.com>"
-  ],
-  "description": "A simple RPC style API middleware of Bucketchain.",
-  "keywords": [
-    "purescript",
-    "webserver",
-    "api"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Bucketchain/purescript-bucketchain-simple-api"
-  },
-  "moduleType": [
-    "node"
-  ],
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "output"
-  ],
-  "dependencies": {
-    "purescript-bucketchain": "^1.0.0",
-    "purescript-simple-json": "^9.0.0",
-    "purescript-media-types": "^6.0.0",
-    "purescript-freet": "^7.0.0"
-  },
-  "devDependencies": {
-    "purescript-assert": "^6.0.0"
-  }
+    "name": "purescript-bucketchain-simple-api",
+    "license": [
+        "MIT"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Bucketchain/purescript-bucketchain-simple-api"
+    },
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "output"
+    ],
+    "dependencies": {
+        "purescript-aff": "^v7.1.0",
+        "purescript-arrays": "^v7.1.0",
+        "purescript-bucketchain": "^v1.0.1",
+        "purescript-control": "^v6.0.0",
+        "purescript-effect": "^v4.0.0",
+        "purescript-either": "^v6.1.0",
+        "purescript-exceptions": "^v6.0.0",
+        "purescript-foreign": "^v7.0.0",
+        "purescript-foreign-object": "^v4.1.0",
+        "purescript-freet": "^v7.0.0",
+        "purescript-lists": "^v7.0.0",
+        "purescript-maybe": "^v6.0.0",
+        "purescript-media-types": "^v6.0.0",
+        "purescript-nullable": "^v6.0.0",
+        "purescript-parallel": "^v6.0.0",
+        "purescript-prelude": "^v6.0.1",
+        "purescript-simple-json": "^v9.0.0",
+        "purescript-strings": "^v6.0.1",
+        "purescript-tailrec": "^v6.1.0",
+        "purescript-transformers": "^v6.0.0",
+        "purescript-typelevel-prelude": "^v7.0.0",
+        "purescript-unsafe-coerce": "^v6.0.0"
+    }
 }
